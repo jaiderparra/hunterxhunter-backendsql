@@ -1,0 +1,42 @@
+// server.js
+import express from "express";
+import cors from "cors";
+import personajesRoutes from "./routes/personajes.js";
+import swaggerJsDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+// 📘 Configuración de Swagger
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Hunter x Hunter API",
+      version: "1.0.0",
+      description: "API REST con Supabase y Swagger para personajes de Hunter x Hunter",
+    },
+    servers: [
+      {
+        url: "http://localhost:10002", // 🔥 Asegúrate de que sea tu puerto local correcto
+        description: "Servidor local",
+      },
+    ],
+  },
+  apis: ["./routes/*.js"], // 👈 Rutas donde Swagger busca las anotaciones
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// 🧩 Rutas principales
+app.use("/api/personajes", personajesRoutes);
+
+// 🟢 Iniciar servidor
+const PORT = process.env.PORT || 10002;
+app.listen(PORT, () => {
+  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`📘 Documentación Swagger en http://localhost:${PORT}/api`);
+});
