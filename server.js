@@ -20,7 +20,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:10002", // 🔥 Asegúrate de que sea tu puerto local correcto
+        url: "hunterxhunter-backendsql-production.up.railway.app", // 🔥 Asegúrate de que sea tu puerto local correcto
         description: "Servidor local",
       },
     ],
