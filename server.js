@@ -32,11 +32,11 @@ const swaggerOptions = {
   apis: ["./routes/*.js"], // 👈 Rutas donde Swagger busca las anotaciones
 };
 
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
 // 🧩 Rutas principales
 app.use("/api/personajes", personajesRoutes);
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // 🟢 Iniciar servidor
 const PORT = process.env.PORT || 10002;
