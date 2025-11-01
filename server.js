@@ -19,10 +19,14 @@ const swaggerOptions = {
       description: "API REST con Supabase y Swagger para personajes de Hunter x Hunter",
     },
     servers: [
-      {
-        url: "hunterxhunter-backendsql-production.up.railway.app", // 🔥 Asegúrate de que sea tu puerto local correcto
-        description: "Servidor local",
-      },
+        {
+            url: "https://hunterxhunter-backendsql-production.up.railway.app",
+            description: "Servidor en Railway",
+        },
+        {
+            url: "http://localhost:10002",
+            description: "Servidor local para desarrollo",
+        },
     ],
   },
   apis: ["./routes/*.js"], // 👈 Rutas donde Swagger busca las anotaciones
