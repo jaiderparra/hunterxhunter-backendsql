@@ -1,15 +1,15 @@
 // controllers/personajes.controller.js
-import { supabase } from '../db.js';
+const { supabase } = require('../db.js');
 
 // ✅ Obtener todos
-export const getPersonajes = async (req, res) => {
+const getPersonajes = async (req, res) => {
   const { data, error } = await supabase.from('personajes').select('*');
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 };
 
 // 🔍 Buscar por nombre
-export const getPersonajeByNombre = async (req, res) => {
+const getPersonajeByNombre = async (req, res) => {
   const { nombre } = req.params;
   const { data, error } = await supabase
     .from('personajes')
@@ -21,7 +21,7 @@ export const getPersonajeByNombre = async (req, res) => {
 };
 
 // ➕ Crear
-export const createPersonaje = async (req, res) => {
+const createPersonaje = async (req, res) => {
   const { nombre, edad, altura, peso, imagen } = req.body;
   const { error } = await supabase.from('personajes').insert([{ nombre, edad, altura, peso, imagen }]);
   if (error) return res.status(500).json({ error: error.message });
@@ -29,7 +29,7 @@ export const createPersonaje = async (req, res) => {
 };
 
 // ✏️ Actualizar
-export const updatePersonaje = async (req, res) => {
+const updatePersonaje = async (req, res) => {
   const { id } = req.params;
   const { nombre, edad, altura, peso, imagen } = req.body;
   const { error } = await supabase
@@ -41,9 +41,18 @@ export const updatePersonaje = async (req, res) => {
 };
 
 // ❌ Eliminar
-export const deletePersonaje = async (req, res) => {
+const deletePersonaje = async (req, res) => {
   const { id } = req.params;
   const { error } = await supabase.from('personajes').delete().eq('id', id);
   if (error) return res.status(500).json({ error: error.message });
   res.json({ message: '✅ Personaje eliminado correctamente' });
+};
+
+// 📦 Exportar todo
+module.exports = {
+  getPersonajes,
+  getPersonajeByNombre,
+  createPersonaje,
+  updatePersonaje,
+  deletePersonaje,
 };

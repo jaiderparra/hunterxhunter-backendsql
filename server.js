@@ -20,7 +20,7 @@ const swaggerOptions = {
     },
     servers: [
         {
-            url: "https://hunterxhunter-backendsql-production.up.railway.app",
+            url: "https://hunterxhunter-backendsql.onrender.com",
             description: "Servidor en Railway",
         },
         {
@@ -44,3 +44,12 @@ app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
   console.log(`📘 Documentación Swagger en http://localhost:${PORT}/api`);
 });
+
+// Exportamos app para Jest
+export default app;
+
+// Solo iniciar si no es test
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 10002;
+  app.listen(PORT, () => console.log(`Servidor SQL en puerto ${PORT}`));
+}
