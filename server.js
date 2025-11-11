@@ -4,7 +4,9 @@ import cors from "cors";
 import personajesRoutes from "./routes/personajes.js";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import { supabase } from "./db.js";
 
+app.locals.supabase = supabase;
 const app = express();
 app.use(express.json());
 app.use(cors());

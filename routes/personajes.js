@@ -13,7 +13,7 @@ const router = express.Router();
  * @swagger
  * tags:
  *   name: Personajes
- *   description: API para gestionar personajes de Hunter x Hunter
+ *   description: API para gestionar personajes de Hunter x Hunter (SQL Supabase)
  */
 
 /**
@@ -25,18 +25,50 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Lista de personajes obtenida correctamente
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Personaje'
  */
 router.get("/", getPersonajes);
 
 /**
  * @swagger
- * /api/personajes/{nombre}:
+ * /api/personajes/id/{id}:
+ *   get:
+ *     summary: Obtener un personaje por ID
+ *     tags: [Personajes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del personaje
+ *     responses:
+ *       200:
+ *         description: Personaje encontrado correctamente
+ *       404:
+ *         description: Personaje no encontrado
+ */
+router.get("/id/:id", async (req, res) => {
+  const { id } = req.params;
+  const { supabase } = req.app.locals;
+
+  try {
+    const { data, error } = await supabase
+      .from("personajes")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) return res.status(404).json({ mensaje: "Personaje no encontrado" });
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/personajes/nombre/{nombre}:
  *   get:
  *     summary: Obtener un personaje por su nombre
  *     tags: [Personajes]
@@ -50,14 +82,10 @@ router.get("/", getPersonajes);
  *     responses:
  *       200:
  *         description: Personaje encontrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Personaje'
  *       404:
  *         description: Personaje no encontrado
  */
-router.get("/:nombre", getPersonajeByNombre);
+router.get("/nombre/:nombre", getPersonajeByNombre);
 
 /**
  * @swagger
@@ -91,7 +119,6 @@ router.post("/", createPersonaje);
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del personaje a actualizar
  *     requestBody:
  *       required: true
  *       content:
@@ -118,7 +145,6 @@ router.put("/:id", updatePersonaje);
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del personaje a eliminar
  *     responses:
  *       200:
  *         description: Personaje eliminado correctamente
@@ -136,22 +162,17 @@ router.delete("/:id", deletePersonaje);
  *       properties:
  *         id:
  *           type: integer
- *           example: 1
  *         nombre:
  *           type: string
- *           example: Hisoka
  *         edad:
  *           type: integer
- *           example: 28
  *         altura:
  *           type: integer
- *           example: 186
  *         peso:
  *           type: integer
- *           example: 80
  *         imagen:
  *           type: string
- *           example: "https://static.wikia.nocookie.net/hunterx..."
+ *
  *     PersonajeInput:
  *       type: object
  *       required:
@@ -163,19 +184,14 @@ router.delete("/:id", deletePersonaje);
  *       properties:
  *         nombre:
  *           type: string
- *           example: Gon Freecss
  *         edad:
  *           type: integer
- *           example: 12
  *         altura:
  *           type: integer
- *           example: 154
  *         peso:
  *           type: integer
- *           example: 49
  *         imagen:
  *           type: string
- *           example: "https://static.wikia.nocookie.net/hunterx..."
  */
 
 export default router;
