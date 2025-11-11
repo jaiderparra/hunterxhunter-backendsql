@@ -19,13 +19,7 @@ const router = express.Router();
 
 router.get("/", getPersonajes);
 
-/**
- * @swagger
- * /api/personajes/id/{id}:
- *   get:
- *     summary: Obtener un personaje por ID
- *     tags: [Personajes]
- */
+// ✅ ESTA RUTA DEBE IR ANTES QUE "/:nombre"
 router.get("/id/:id", getPersonajeById);
 
 /**
