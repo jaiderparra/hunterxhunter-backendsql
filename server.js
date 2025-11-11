@@ -1,57 +1,38 @@
-// server.js
-import express from "express";
-import cors from "cors";
-import personajesRoutes from "./routes/personajes.js";
-import swaggerJsDoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
-import { supabase } from "./db.js";
+const express = require("express");
+const cors = require("cors");
+const personajesRoutes = require("./routes/personajes.js");
+const swaggerJsDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 
-app.locals.supabase = supabase;
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// 📘 Configuración de Swagger
 const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
     info: {
       title: "Hunter x Hunter API",
       version: "1.0.0",
-      description: "API REST con Supabase y Swagger para personajes de Hunter x Hunter",
+      description: "API REST con Supabase y Swagger",
     },
     servers: [
-        {
-            url: "https://hunterxhunter-backendsql.onrender.com",
-            description: "Servidor en Railway",
-        },
-        {
-            url: "http://localhost:10002",
-            description: "Servidor local para desarrollo",
-        },
+      { url: "https://hunterxhunter-backendsql.onrender.com" },
+      { url: "http://localhost:10002" }
     ],
   },
-  apis: ["./routes/*.js"], // 👈 Rutas donde Swagger busca las anotaciones
+  apis: ["./routes/*.js"],
 };
 
-// 🧩 Rutas principales
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Rutas
 app.use("/api/personajes", personajesRoutes);
 
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-// 🟢 Iniciar servidor
 const PORT = process.env.PORT || 10002;
-app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`📘 Documentación Swagger en http://localhost:${PORT}/api`);
-});
-
-// Exportamos app para Jest
-export default app;
-
-// Solo iniciar si no es test
-if (process.env.NODE_ENV !== 'test') {
-  const PORT = process.env.PORT || 10002;
-  app.listen(PORT, () => console.log(`Servidor SQL en puerto ${PORT}`));
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => console.log(`✅ Servidor SQL en puerto ${PORT}`));
 }
+
+module.exports = app;

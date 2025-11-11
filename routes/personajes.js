@@ -1,11 +1,12 @@
-import express from "express";
-import {
+const express = require("express");
+const {
   getPersonajes,
   getPersonajeByNombre,
   createPersonaje,
   updatePersonaje,
   deletePersonaje
-} from "../controller/personajes.controller.js";
+} = require("../controller/personajes.controller.js");
+const { supabase } = require("../db.js");
 
 const router = express.Router();
 
@@ -34,36 +35,19 @@ router.get("/", getPersonajes);
  *   get:
  *     summary: Obtener un personaje por ID
  *     tags: [Personajes]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del personaje
- *     responses:
- *       200:
- *         description: Personaje encontrado correctamente
- *       404:
- *         description: Personaje no encontrado
  */
 router.get("/id/:id", async (req, res) => {
   const { id } = req.params;
-  const { supabase } = req.app.locals;
 
-  try {
-    const { data, error } = await supabase
-      .from("personajes")
-      .select("*")
-      .eq("id", id)
-      .single();
+  const { data, error } = await supabase
+    .from("personajes")
+    .select("*")
+    .eq("id", id)
+    .single();
 
-    if (error || !data) return res.status(404).json({ mensaje: "Personaje no encontrado" });
+  if (error || !data) return res.status(404).json({ mensaje: "Personaje no encontrado" });
 
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  res.json(data);
 });
 
 /**
@@ -72,18 +56,6 @@ router.get("/id/:id", async (req, res) => {
  *   get:
  *     summary: Obtener un personaje por su nombre
  *     tags: [Personajes]
- *     parameters:
- *       - in: path
- *         name: nombre
- *         required: true
- *         schema:
- *           type: string
- *         description: Nombre del personaje
- *     responses:
- *       200:
- *         description: Personaje encontrado
- *       404:
- *         description: Personaje no encontrado
  */
 router.get("/nombre/:nombre", getPersonajeByNombre);
 
@@ -93,17 +65,6 @@ router.get("/nombre/:nombre", getPersonajeByNombre);
  *   post:
  *     summary: Crear un nuevo personaje
  *     tags: [Personajes]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/PersonajeInput'
- *     responses:
- *       201:
- *         description: Personaje creado correctamente
- *       400:
- *         description: Error en la solicitud
  */
 router.post("/", createPersonaje);
 
@@ -113,23 +74,6 @@ router.post("/", createPersonaje);
  *   put:
  *     summary: Actualizar un personaje por ID
  *     tags: [Personajes]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/PersonajeInput'
- *     responses:
- *       200:
- *         description: Personaje actualizado correctamente
- *       404:
- *         description: Personaje no encontrado
  */
 router.put("/:id", updatePersonaje);
 
@@ -139,59 +83,7 @@ router.put("/:id", updatePersonaje);
  *   delete:
  *     summary: Eliminar un personaje por ID
  *     tags: [Personajes]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Personaje eliminado correctamente
- *       404:
- *         description: Personaje no encontrado
  */
 router.delete("/:id", deletePersonaje);
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Personaje:
- *       type: object
- *       properties:
- *         id:
- *           type: integer
- *         nombre:
- *           type: string
- *         edad:
- *           type: integer
- *         altura:
- *           type: integer
- *         peso:
- *           type: integer
- *         imagen:
- *           type: string
- *
- *     PersonajeInput:
- *       type: object
- *       required:
- *         - nombre
- *         - edad
- *         - altura
- *         - peso
- *         - imagen
- *       properties:
- *         nombre:
- *           type: string
- *         edad:
- *           type: integer
- *         altura:
- *           type: integer
- *         peso:
- *           type: integer
- *         imagen:
- *           type: string
- */
-
-export default router;
+module.exports = router;
