@@ -1,12 +1,12 @@
-const express = require("express");
-const {
+import express from "express";
+import {
   getPersonajes,
+  getPersonajeById,
   getPersonajeByNombre,
   createPersonaje,
   updatePersonaje,
   deletePersonaje
-} = require("../controller/personajes.controller.js");
-const { supabase } = require("../db.js");
+} from "../controller/personajes.controller.js";
 
 const router = express.Router();
 
@@ -14,19 +14,9 @@ const router = express.Router();
  * @swagger
  * tags:
  *   name: Personajes
- *   description: API para gestionar personajes de Hunter x Hunter (SQL Supabase)
+ *   description: API para gestionar personajes de Hunter x Hunter
  */
 
-/**
- * @swagger
- * /api/personajes:
- *   get:
- *     summary: Obtener todos los personajes
- *     tags: [Personajes]
- *     responses:
- *       200:
- *         description: Lista de personajes obtenida correctamente
- */
 router.get("/", getPersonajes);
 
 /**
@@ -36,25 +26,13 @@ router.get("/", getPersonajes);
  *     summary: Obtener un personaje por ID
  *     tags: [Personajes]
  */
-router.get("/id/:id", async (req, res) => {
-  const { id } = req.params;
-
-  const { data, error } = await supabase
-    .from("personajes")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error || !data) return res.status(404).json({ mensaje: "Personaje no encontrado" });
-
-  res.json(data);
-});
+router.get("/id/:id", getPersonajeById);
 
 /**
  * @swagger
  * /api/personajes/nombre/{nombre}:
  *   get:
- *     summary: Obtener un personaje por su nombre
+ *     summary: Obtener personaje por nombre
  *     tags: [Personajes]
  */
 router.get("/nombre/:nombre", getPersonajeByNombre);
@@ -63,7 +41,7 @@ router.get("/nombre/:nombre", getPersonajeByNombre);
  * @swagger
  * /api/personajes:
  *   post:
- *     summary: Crear un nuevo personaje
+ *     summary: Crear personaje
  *     tags: [Personajes]
  */
 router.post("/", createPersonaje);
@@ -72,7 +50,7 @@ router.post("/", createPersonaje);
  * @swagger
  * /api/personajes/{id}:
  *   put:
- *     summary: Actualizar un personaje por ID
+ *     summary: Actualizar personaje
  *     tags: [Personajes]
  */
 router.put("/:id", updatePersonaje);
@@ -81,9 +59,9 @@ router.put("/:id", updatePersonaje);
  * @swagger
  * /api/personajes/{id}:
  *   delete:
- *     summary: Eliminar un personaje por ID
+ *     summary: Eliminar personaje
  *     tags: [Personajes]
  */
 router.delete("/:id", deletePersonaje);
 
-module.exports = router;
+export default router;

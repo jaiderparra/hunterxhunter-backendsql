@@ -4,14 +4,11 @@ const { supabase } = require('../db.js');
 // ✅ Obtener todos los personajes
 const getPersonajes = async (req, res) => {
   const { data, error } = await supabase.from('personajes').select('*');
-
   if (error) return res.status(500).json({ error: error.message });
-
   res.json(data);
 };
 
 // ✅ Obtener personaje por ID (para editar)
-// (Frontend lo necesita para precargar datos en update)
 const getPersonajeById = async (req, res) => {
   const { id } = req.params;
 
@@ -19,27 +16,24 @@ const getPersonajeById = async (req, res) => {
     .from('personajes')
     .select('*')
     .eq('id', id)
-    .single(); // devuelve un solo registro
+    .single();
 
-  if (error || !data)
-    return res.status(404).json({ mensaje: 'Personaje no encontrado' });
+  if (error || !data) return res.status(404).json({ mensaje: 'Personaje no encontrado' });
 
   res.json(data);
 };
 
-// 🔍 Buscar por nombre (búsqueda individual opcional)
+// 🔍 Buscar por nombre (opcional)
 const getPersonajeByNombre = async (req, res) => {
   const { nombre } = req.params;
 
   const { data, error } = await supabase
     .from('personajes')
     .select('*')
-    .ilike('nombre', `%${nombre}%`); // búsqueda de coincidencia parcial
+    .ilike('nombre', `%${nombre}%`);
 
   if (error) return res.status(500).json({ error: error.message });
-
-  if (!data.length)
-    return res.status(404).json({ mensaje: 'Personaje no encontrado' });
+  if (!data.length) return res.status(404).json({ mensaje: 'Personaje no encontrado' });
 
   res.json(data);
 };
@@ -48,10 +42,7 @@ const getPersonajeByNombre = async (req, res) => {
 const createPersonaje = async (req, res) => {
   const { nombre, edad, altura, peso, imagen } = req.body;
 
-  const { error } = await supabase
-    .from('personajes')
-    .insert([{ nombre, edad, altura, peso, imagen }]);
-
+  const { error } = await supabase.from('personajes').insert([{ nombre, edad, altura, peso, imagen }]);
   if (error) return res.status(500).json({ error: error.message });
 
   res.status(201).json({ message: '✅ Personaje agregado correctamente' });
@@ -77,13 +68,11 @@ const deletePersonaje = async (req, res) => {
   const { id } = req.params;
 
   const { error } = await supabase.from('personajes').delete().eq('id', id);
-
   if (error) return res.status(500).json({ error: error.message });
 
   res.json({ message: '✅ Personaje eliminado correctamente' });
 };
 
-// 📦 Exportar funciones
 module.exports = {
   getPersonajes,
   getPersonajeById,
